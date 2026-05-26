@@ -23,7 +23,7 @@ private val Context.ds by preferencesDataStore("norms")
 @Entity(tableName = "history")
 data class HistoryEntity(@PrimaryKey(autoGenerate = true) val id: Long = 0, val date: String, val project: String, val profile: String, val labor: Double, val days: Int, val payload: String)
 @Dao interface HistoryDao { @Query("SELECT * FROM history ORDER BY id DESC") fun all(): Flow<List<HistoryEntity>>; @Insert suspend fun insert(entity: HistoryEntity); @Query("DELETE FROM history WHERE id=:id") suspend fun delete(id: Long) }
-@Database(entities=[HistoryEntity::class], version=1) abstract class AppDb: RoomDatabase(){ abstract fun historyDao(): HistoryDao }
+@Database(entities=[HistoryEntity::class], version=1, exportSchema=false) abstract class AppDb: RoomDatabase(){ abstract fun historyDao(): HistoryDao }
 
 class Repos(context: Context) {
     private val db = Room.databaseBuilder(context, AppDb::class.java, "app.db").build()
