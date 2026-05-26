@@ -26,13 +26,40 @@ data class HistoryEntity(@PrimaryKey(autoGenerate = true) val id: Long = 0, val 
 @Database(entities=[HistoryEntity::class], version=1, exportSchema=false) abstract class AppDb: RoomDatabase(){ abstract fun historyDao(): HistoryDao }
 
 class Repos(context: Context) {
-    private val db = Room.databaseBuilder(context, AppDb::class.java, "app.db").build()
+
+    private val appContext = context.applicationContext
+
+    private val db = Room.databaseBuilder(
+        appContext,
+        AppDb::class.java,
+        "app.db"
+    ).build()
+
     val history = db.historyDao().all()
+
     private val key = stringPreferencesKey("config")
+
     suspend fun saveHistory(e: HistoryEntity) = db.historyDao().insert(e)
+
     suspend fun deleteHistory(id: Long) = db.historyDao().delete(id)
-    suspend fun loadConfig(): NormConfig { val raw = context.ds.data.map{it[key]}.first(); return if (raw.isNullOrBlank()) Defaults.config() else Json.decodeFromString(SerNorm.serializer(), raw).toNorm() }
-    suspend fun saveConfig(c: NormConfig) { context.ds.edit { it[key] = Json.encodeToString(SerNorm.from(c)) } }
+
+    suspend fun loadConfig(): NormConfig {
+        val raw = appContext.ds.data.map { preferences ->
+            preferences[key]
+        }.first()
+
+        return if (raw.isNullOrBlank()) {
+            Defaults.config()
+        } else {
+            Json.decodeFromString(SerNorm.serializer(), raw).toNorm()
+        }
+    }
+
+    suspend fun saveConfig(c: NormConfig) {
+        appContext.ds.edit { preferences ->
+            preferences[key] = Json.encodeToString(SerNorm.from(c))
+        }
+    }
 }
 
 @kotlinx.serialization.Serializable data class SerNorm(val base: Map<String, Map<String, Double>>, val character: Map<String, Double>, val pkg: Map<String, Double>, val inputs: Map<String, Double>, val approval: Map<String, Double>) {

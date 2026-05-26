@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -62,22 +63,43 @@ fun AppScreen(vm: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Picker(label: String, value: String?, opts: List<String>, onSel: (String) -> Unit) {
-    var ex by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(expanded = ex, onExpandedChange = { ex = !ex }) {
+fun Picker(
+    label: String,
+    value: String?,
+    opts: List<String>,
+    onSel: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
         OutlinedTextField(
-            value = value ?: "",
+            value = value.orEmpty(),
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
             modifier = Modifier
                 .menuAnchor()
-                .fillMaxWidth(),
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = ex) }
+                .fillMaxWidth()
         )
-        androidx.compose.material3.ExposedDropdownMenu(expanded = ex, onDismissRequest = { ex = false }) {
-            opts.forEach {
-                DropdownMenuItem(text = { Text(it) }, onClick = { onSel(it); ex = false })
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            opts.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onSel(option)
+                        expanded = false
+                    }
+                )
             }
         }
     }
