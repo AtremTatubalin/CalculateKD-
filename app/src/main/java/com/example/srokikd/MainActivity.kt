@@ -1,0 +1,14 @@
+package com.example.srokikd
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+
+class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels { MainViewModel.factory(applicationContext) }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent { AppScreen(viewModel) }
+    }
+}
