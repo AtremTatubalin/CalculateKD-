@@ -281,7 +281,7 @@ fun AppTopBar(onHistoryClick: () -> Unit, onSettingsClick: () -> Unit) {
             Text(
                 "Сроки КД",
                 color = AppTextPrimary,
-                fontSize = 40.sp,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
@@ -327,7 +327,9 @@ fun ParameterSelectionCard(
                     .fillMaxWidth()
                     .height(76.dp)
                     .border(1.dp, AppOutline, RoundedCornerShape(14.dp))
-                    .padding(horizontal = 14.dp),
+                    .padding(horizontal = 14.dp)
+                    .menuAnchor()
+                    .clickable { expanded = true },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(icon, null, tint = AppPrimary, modifier = Modifier.size(25.dp))
@@ -388,15 +390,14 @@ fun NumericParameterCard(
                 Spacer(Modifier.width(8.dp))
                 Text(label, color = AppTextSecondary)
             }
-            Row(verticalAlignment = Alignment.Bottom) {
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = onValue,
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-                Text(unit, color = AppTextTertiary, modifier = Modifier.padding(start = 8.dp, bottom = 8.dp))
-            }
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValue,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = MaterialTheme.typography.titleMedium,
+                label = { Text(unit) }
+            )
         }
     }
 }
